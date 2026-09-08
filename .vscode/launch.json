@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SafariSummarizer}",
+            "name": "Debug SafariSummary",
+            "program": "${workspaceFolder:SafariSummarizer}/.build/debug/SafariSummary",
+            "preLaunchTask": "swift: Build Debug SafariSummary"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SafariSummarizer}",
+            "name": "Release SafariSummary",
+            "program": "${workspaceFolder:SafariSummarizer}/.build/release/SafariSummary",
+            "preLaunchTask": "swift: Build Release SafariSummary"
+        }
+    ]
+}
