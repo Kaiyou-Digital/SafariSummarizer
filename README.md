@@ -44,9 +44,17 @@ brew tap kaiyou-digital/tap
 brew install safari-summary
 ```
 
+On a first install, Homebrew will refuse the formula with `Refusing to load
+formula ... from untrusted tap` — that's expected for any third-party tap.
+Trust it first:
+
+```bash
+brew trust --formula kaiyou-digital/tap/safari-summary
+brew install safari-summary
+```
+
 This builds from source (`swift build -c release`), so no signing/notarization
-is involved. If Homebrew ever asks you to trust the tap or formula first, run
-`brew trust --formula kaiyou-digital/tap/safari-summary`.
+is involved.
 
 ## Releasing
 
