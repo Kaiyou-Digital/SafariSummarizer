@@ -37,6 +37,24 @@ swift build -c release   # release build
 --summary-limit <chars>   Maximum length of each summary, in characters (default: 200)
 ```
 
+## Installing via Homebrew
+
+```bash
+brew tap kaiyou-digital/tap
+brew install safari-summary
+```
+
+This builds from source (`swift build -c release`), so no signing/notarization
+is involved. If Homebrew ever asks you to trust the tap or formula first, run
+`brew trust --formula kaiyou-digital/tap/safari-summary`.
+
+## Releasing
+
+`./build-release.sh` bumps the version (from conventional commit prefixes
+since the last tag — `feat:` → minor, `BREAKING`/`!:` → major, anything else
+→ patch), tags and pushes, creates a GitHub release, and updates the formula
+in `../homebrew-tap` with the new version and sha256.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
