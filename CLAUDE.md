@@ -23,7 +23,7 @@ There is no test suite. VS Code launch configs (`.vscode/launch.json`) exist for
 The tool requires:
 - macOS (uses `Cocoa`/`NSAppleScript` and AppleScript automation of Safari — this will not build or run on other platforms).
 - Safari running with automation permission granted (System Settings → Privacy & Security → Automation) for whatever runs the binary (Terminal, VS Code, etc.).
-- A local OpenAI-compatible chat completions server reachable at `http://127.0.0.1:1234/v1/chat/completions` (the code targets an LM Studio-style server with model `gpt-oss-20b`). Without it running, every tab's summarization step fails and is skipped (the tool still produces a bookmarks file with just the summary comment omitted).
+- A local OpenAI-compatible chat completions server, by default reachable at `http://127.0.0.1:1234/v1/chat/completions` (the code targets an LM Studio-style server with model `gpt-oss-20b` by default). Without it running, every tab's summarization step fails and is skipped (the tool still produces a bookmarks file with just the summary comment omitted). Both the server URL and model name are configurable via `--server-url` and `--model`.
 
 ## Architecture
 
@@ -34,6 +34,6 @@ Everything lives in `Sources/SafariSummary.swift`, structured as a single linear
 3. **Build bookmarks HTML** — each tab becomes a `<DT><A>`/`<DD>` pair (Netscape bookmark format), with the summary embedded as an HTML comment under `<DD>`.
 4. **Write output** — the full HTML is written to `~/Desktop/Safari_Bookmarks_<yyyyMMdd>.html`.
 
-Configuration constants (`lmServerURL`, `apiTimeout`, `summaryCharLimit`) are defined near the top of the file under `// MARK: - Configuration` — change these rather than hardcoding new values elsewhere.
+Configuration (server URL, model name, request timeout, summary character limit) is exposed as `@Option` properties on the `SafariSummary` struct (`--server-url`, `--model`, `--timeout`, `--summary-limit`), each with the same default it had as a hardcoded constant. Add new configuration the same way rather than reintroducing top-level constants.
 
-Networking (`httpGet`, `httpPostJSON`) is done directly with `URLSession`, no HTTP client dependency. The only external dependency is `swift-argument-parser` (via `AsyncParsableCommand`), though no command-line arguments/options are currently defined on the `SafariSummary` struct.
+Networking (`httpGet`, `httpPostJSON`) is done directly with `URLSession`, no HTTP client dependency. The only external dependency is `swift-argument-parser` (via `AsyncParsableCommand`).

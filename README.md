@@ -15,7 +15,7 @@ Tabs that fail to summarize (e.g. the LLM server is down) are skipped rather tha
 
 - macOS, with Safari running.
 - Automation permission granted to whatever runs the binary (Terminal, VS Code, etc.) under **System Settings → Privacy & Security → Automation**, so it can script Safari.
-- A local OpenAI-compatible chat completions server (e.g. [LM Studio](https://lmstudio.ai)) listening at `http://127.0.0.1:1234/v1/chat/completions`, serving a model named `gpt-oss-20b`. Without it, tabs will fail to summarize and be skipped.
+- A local OpenAI-compatible chat completions server (e.g. [LM Studio](https://lmstudio.ai)), by default expected at `http://127.0.0.1:1234/v1/chat/completions` serving a model named `gpt-oss-20b`. Without it, tabs will fail to summarize and be skipped.
 
 ## Build & run
 
@@ -26,7 +26,16 @@ swift build -c release   # release build
 .build/release/SafariSummary   # run the release binary directly
 ```
 
-There's no configuration file or command-line options yet — the LLM server URL, request timeout, and summary length limit are constants near the top of `Sources/SafariSummary.swift`.
+## Options
+
+```
+--server-url <url>        URL of the OpenAI-compatible chat completions endpoint
+                          (default: http://127.0.0.1:1234/v1/chat/completions)
+--model <name>            Model name to request from the summarization server
+                          (default: gpt-oss-20b)
+--timeout <seconds>       Request timeout in seconds (default: 30.0)
+--summary-limit <chars>   Maximum length of each summary, in characters (default: 200)
+```
 
 ## License
 

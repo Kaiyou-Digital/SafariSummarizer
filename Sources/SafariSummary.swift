@@ -4,7 +4,25 @@ import Cocoa
 
 @main
 struct SafariSummary: AsyncParsableCommand {
-    static func main() async {
+    static let configuration = CommandConfiguration(version: safariSummaryVersion)
+
+    @Option(name: .long, help: "URL of the OpenAI-compatible chat completions endpoint")
+    var serverURL: String = "http://127.0.0.1:1234/v1/chat/completions"
+
+    @Option(name: .long, help: "Model name to request from the summarization server")
+    var model: String = "gpt-oss-20b"
+
+    @Option(name: .long, help: "Request timeout in seconds")
+    var timeout: Double = 30.0
+
+    @Option(name: .long, help: "Maximum length of each summary, in characters")
+    var summaryLimit: Int = 200
+
+    func run() async throws {
+        guard let lmServerURL = URL(string: serverURL) else {
+            throw ValidationError("Invalid --server-url: \(serverURL)")
+        }
+
         print("🕵️  Starting Safari summariser…")
 
         // 1️⃣ Get all tabs using AppleScript (from SafariTabs.swift)
@@ -20,7 +38,7 @@ struct SafariSummary: AsyncParsableCommand {
 
             // Call LM Server API with URL
             let reqBody = ChatCompletionRequest(
-                model: "gpt-oss-20b",
+                model: model,
                 messages: [
                     ChatMessage(
                         role: "user",
@@ -32,14 +50,14 @@ struct SafariSummary: AsyncParsableCommand {
             let summaryResp: ChatCompletionResponse
 
             do {
-                apiData = try await httpPostJSON(url: lmServerURL, body: reqBody, timeout: apiTimeout)
+                apiData = try await httpPostJSON(url: lmServerURL, body: reqBody, timeout: timeout)
                 summaryResp = try decoder.decode(ChatCompletionResponse.self, from: apiData)
             } catch {
                 print("⚠️  Summarisation API failed for tab \(tab.url)). Skipping. - \(error.localizedDescription)")
                 continue
             }
 
-            let summaryText = truncate(summaryResp.choices.first?.message.content ?? "No summary available", limit: summaryCharLimit)
+            let summaryText = truncate(summaryResp.choices.first?.message.content ?? "No summary available", limit: summaryLimit)
             
             // Build bookmark <dt>/<dd> pair
             let entryHTML =
@@ -84,16 +102,6 @@ struct SafariSummary: AsyncParsableCommand {
         }
     }
 }
-
-// MARK: - Configuration
-
-let lmServerURL = URL(string: "http://127.0.0.1:1234/v1/chat/completions")!
-
-// Timeout values (seconds)
-let apiTimeout = 30.0
-
-// Summary length limit (characters)
-let summaryCharLimit = 200
 
 // MARK: - Helper Functions
 
