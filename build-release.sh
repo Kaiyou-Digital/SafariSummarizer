@@ -7,6 +7,15 @@ cd "${SCRIPT_DIR}"
 REPO="Kaiyou-Digital/SafariSummarizer"
 BINARY_NAME="safari-summary"
 
+# --- Preflight: everything that can fail, checked before anything changes (no bump, commit or tag yet) ---
+
+source "${SCRIPT_DIR}/release-preflight.sh"
+TAP_REPO="${HOME}/Work/Kaiyou/Apps/homebrew-tap" # same path as in the Homebrew section below
+FORMULA="${TAP_REPO}/Formula/${BINARY_NAME}.rb"
+preflight_tools swift git gh curl shasum swiftformat swiftlint
+preflight_repo_state
+preflight_credentials
+
 # --- Auto-version from conventional commits ---
 
 LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -39,6 +48,14 @@ esac
 
 VERSION="${MAJOR}.${MINOR}.${PATCH}"
 echo "==> Version bump: ${CURRENT_VERSION} -> ${VERSION} (${BUMP})"
+
+preflight_tag "v${VERSION}"
+preflight_tap "${TAP_REPO}" "${FORMULA}"
+preflight_gate
+if [[ "${PREFLIGHT_ONLY:-}" == "1" ]]; then
+    echo "==> Preflight passed for v${VERSION}. Nothing was changed, committed, tagged or published."
+    exit 0
+fi
 
 # --- Update Version.swift, commit and tag ---
 
