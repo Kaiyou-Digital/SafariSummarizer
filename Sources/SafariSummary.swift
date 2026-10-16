@@ -1,6 +1,6 @@
 import ArgumentParser
-import Foundation
 import Cocoa
+import Foundation
 
 @main
 struct SafariSummary: AsyncParsableCommand {
@@ -60,7 +60,7 @@ struct SafariSummary: AsyncParsableCommand {
             }
 
             let summaryText = truncate(summaryResp.choices.first?.message.content ?? "No summary available", limit: summaryLimit)
-            
+
             // Build bookmark <dt>/<dd> pair
             let entryHTML =
                 """
