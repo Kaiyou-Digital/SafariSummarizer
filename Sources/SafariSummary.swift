@@ -18,6 +18,8 @@ struct SafariSummary: AsyncParsableCommand {
     @Option(name: .long, help: "Maximum length of each summary, in characters")
     var summaryLimit: Int = 200
 
+    // The whole linear pipeline (tabs, summaries, bookmarks, write) stays in one function.
+    // swiftlint:disable:next function_body_length
     func run() async throws {
         guard let lmServerURL = URL(string: serverURL) else {
             throw ValidationError("Invalid --server-url: \(serverURL)")

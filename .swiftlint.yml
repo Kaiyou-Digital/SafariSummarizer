@@ -1,0 +1,21 @@
+included:
+  - Sources
+excluded:
+  - "**/.build"
+
+disabled_rules:
+  # The dictionary literal in escapeHTML ends with a trailing comma; both styles are fine here.
+  - trailing_comma
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_urls: true
+
+identifier_name:
+  # Loop variables in a 230-line tool.
+  excluded: [id, i, k, v]
+
+opening_brace:
+  # Multi-line `if let` conditions put the `{` on its own line (the layout Apple's formatter produces).
+  ignore_multiline_statement_conditions: true

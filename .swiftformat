@@ -1,0 +1,10 @@
+--swift-version 6.1
+--indent 4
+--ranges no-space
+--exclude .build,.swiftpm
+
+# Explicit allowlist, not "defaults minus the noisy ones". The default `indent` rule wants to re-indent the
+# multi-line HTML template in SafariSummary.swift (25 lines), which is the output format of the tool, so it stays
+# off; `wrapLoopBodies` and `trailingCommas` disagree with the compact loops and with SwiftLint's trailing_comma.
+# These rules only touch whitespace and import order.
+--rules sortImports,consecutiveSpaces,consecutiveBlankLines,trailingSpace,linebreakAtEndOfFile,spaceAroundOperators,spaceInsideParens,spaceInsideBrackets
