@@ -2,6 +2,7 @@
 # Tests for release-preflight.sh (the git-state, tag and tap checks) in throwaway repos with a bare origin.
 # The gate needs Swift, SwiftFormat and SwiftLint; run it with: PREFLIGHT_ONLY=1 ./build-release.sh
 # Run: Scripts/test-release-preflight.sh
+# shellcheck disable=SC1090,SC2034,SC2016,SC2015 # sourced path is dynamic, OUT/CODE are read by the checks, and the check expressions are deliberately single-quoted
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PREFLIGHT="${HERE}/../release-preflight.sh"
