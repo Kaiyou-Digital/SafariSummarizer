@@ -1,0 +1,35 @@
+name: CI
+
+# Manual-only, to save GitHub Actions minutes (macOS runners are the expensive ones). The same checks run locally in
+# Scripts/pre-push.sh. Run this from the Actions tab for a clean-machine check (e.g. before a release).
+# To restore automatic runs, swap the trigger for:
+#   on:
+#     push:
+#       branches: [main]
+#     pull_request:
+on:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install swiftformat swiftlint
+      # A backstop for a commit made without the local hooks installed, not a replacement for them.
+      - run: swiftformat Sources --lint
+      - name: swiftlint (strict, so warnings fail here unlike the local pre-commit hook)
+        run: swiftlint lint --strict
+
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (debug)
+        run: swift build
+      - name: Build (release)
+        run: swift build -c release
+      - name: Smoke test
+        run: |
+          test "$(.build/release/SafariSummary --version)" = "$(sed -n 's/^let safariSummaryVersion = "\(.*\)"/\1/p' Sources/Version.swift)"
+          .build/release/SafariSummary --help
