@@ -66,3 +66,5 @@ in `../homebrew-tap` with the new version and sha256.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<!-- review workflow smoke test -->
