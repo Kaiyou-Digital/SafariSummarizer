@@ -4,8 +4,8 @@
 #
 # No test step: this package has no tests. The compile and smoke checks live in Scripts/pre-push.sh.
 #
-# Known limitation: this reformats and re-`git add`s the staged files using their working-tree content. If a file has
-# a mix of staged and unstaged hunks (partial `git add -p`), the unstaged part gets swept into the commit.
+# A file with unstaged changes on top of its staged ones is refused: formatting re-adds whole files, so
+# those changes would be committed too.
 #
 # Written for macOS's stock /bin/bash 3.2: no mapfile, NUL-delimited reads instead.
 set -euo pipefail
@@ -29,6 +29,19 @@ for tool in swiftformat swiftlint; do
     exit 1
   fi
 done
+
+# Formatting re-adds whole files, so a partly staged file would have its unstaged hunks committed too.
+# Refuse rather than quietly commit work the author left out on purpose.
+partly_staged=()
+for file in "${swift_files[@]}"; do
+    git diff --quiet -- "$file" || partly_staged+=("$file")
+done
+if [ "${#partly_staged[@]}" -gt 0 ]; then
+    echo "pre-commit: these files have unstaged changes on top of the staged ones, and formatting would add them to the commit:" >&2
+    printf '  %s\n' "${partly_staged[@]}" >&2
+    echo "pre-commit: stage the whole file (git add <file>), or put the unstaged part aside first, then commit again." >&2
+    exit 1
+fi
 
 echo "pre-commit: formatting ${#swift_files[@]} staged Swift file(s)..."
 swiftformat --quiet "${swift_files[@]}"
